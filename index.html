@@ -37,16 +37,16 @@
             return arrObject.find((object) => object.address.objectKey === id);
         };
 
-        var path1;
+        // var path1;
         const creatobject = (i) => {
-            path1 = new fabric.Rect({
+           var path1 = new fabric.Rect({
                 id: 'id_' + i,
                 class: 'class_' + fabric.Object.__uid,
-                left: 150,
+                left: 150+50*i,
                 width: 200,
                 height: 200,
                 top: 150,
-                fill: 'yellow',
+                fill: `hsl(${i*40}, 100%, 50%)`,
                 stroke: 'red',
                 strokeWidth: 5,
                 strokeUniform: false,
@@ -64,13 +64,15 @@
             arrObject.push(id_1);
 
             id_1.onValuesChange((val) => {
-            path1.set({ opacity: val.opacity })
-            path1.setCoords();
-            canvas.requestRenderAll();
-        })
+                path1.set({ opacity: val.opacity })
+                path1.setCoords();
+                canvas.requestRenderAll();
+            })
         }
-        creatobject(1)
 
+        for (let i = 0; i < 5; i++) {
+            creatobject(i)
+        }
 
     </script>
 </head>
