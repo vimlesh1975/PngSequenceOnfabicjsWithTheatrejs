@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./fabric.js"></script>
+    <canvas id="canvas" width="1920" height="1080"></canvas>
+
+
+    <script type="module">
+        import 'https://cdn.jsdelivr.net/npm/@theatre/browser-bundles@0.6.0/dist/core-and-studio.js';
+        // We can now access Theatre.core and Theatre.studio from here
+        const { core, studio } = Theatre;
+
+        studio.initialize(); // Start the Theatre.js UI
+        var currentValue = [];
+        var temprect;
+        export const shadowOptions = {
+            color: '#000000',
+            blur: 30,
+            offsetX: 0,
+            offsetY: 0,
+            affectStroke: false,
+        };
+
+        // Initialize Fabric.js canvas
+        var canvas = new fabric.Canvas('canvas');
+        window.canvas = canvas;
+        // Create a sample SVG path
+        var pathData =
+            'd=M 322 195 Q 598 10 712 93 C 1014 121 1265 251 1025 391  Q 570 580 315 373 z';
+        var path1 = new fabric.Path(pathData, {
+            id: 'id_1',
+            class: 'class_' + fabric.Object.__uid,
+            left: 150,
+            top: 150,
+            fill: 'yellow',
+            stroke: 'red',
+            strokeWidth: 5,
+            strokeUniform: false,
+            objectCaching: false,
+            shadow: shadowOptions,
+        });
+        canvas.add(path1).setActiveObject(path1);
+
+
+        const project = core.getProject('fabricjs path Animation');
+        const sheet = project.sheet('Sheet 1');
+        const id_1 = sheet.object(path1.id, { opacity: core.types.number(1, { range: [0, 1] }) });
+        const arrObject = [];
+        arrObject.push(id_1);
+        const getObjectbyId = (id) => {
+            return arrObject.find((object) => object.address.objectKey === id);
+        };
+
+        path1.on('mousedown', () => {
+            studio.setSelection([getObjectbyId(path1.id)]);
+        });
+
+        id_1.onValuesChange((val) => {
+            path1.set({ opacity: val.opacity })
+            path1.setCoords();
+            canvas.requestRenderAll();
+        })
+
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>
