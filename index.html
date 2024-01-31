@@ -29,41 +29,48 @@
         var canvas = new fabric.Canvas('canvas');
         window.canvas = canvas;
         // Create a sample SVG path
-        var pathData =
-            'd=M 322 195 Q 598 10 712 93 C 1014 121 1265 251 1025 391  Q 570 580 315 373 z';
-        var path1 = new fabric.Path(pathData, {
-            id: 'id_1',
-            class: 'class_' + fabric.Object.__uid,
-            left: 150,
-            top: 150,
-            fill: 'yellow',
-            stroke: 'red',
-            strokeWidth: 5,
-            strokeUniform: false,
-            objectCaching: false,
-            shadow: shadowOptions,
-        });
-        canvas.add(path1).setActiveObject(path1);
-
 
         const project = core.getProject('fabricjs path Animation');
         const sheet = project.sheet('Sheet 1');
-        const id_1 = sheet.object(path1.id, { opacity: core.types.number(1, { range: [0, 1] }) });
         const arrObject = [];
-        arrObject.push(id_1);
         const getObjectbyId = (id) => {
             return arrObject.find((object) => object.address.objectKey === id);
         };
 
-        path1.on('mousedown', () => {
-            studio.setSelection([getObjectbyId(path1.id)]);
-        });
+        var path1;
+        const creatobject = (i) => {
+            path1 = new fabric.Rect({
+                id: 'id_' + i,
+                class: 'class_' + fabric.Object.__uid,
+                left: 150,
+                width: 200,
+                height: 200,
+                top: 150,
+                fill: 'yellow',
+                stroke: 'red',
+                strokeWidth: 5,
+                strokeUniform: false,
+                objectCaching: false,
+                shadow: shadowOptions,
+            });
+            canvas.add(path1).setActiveObject(path1);
 
-        id_1.onValuesChange((val) => {
+
+            path1.on('mousedown', () => {
+                studio.setSelection([getObjectbyId(path1.id)]);
+            });
+
+            const id_1 = sheet.object(path1.id, { opacity: core.types.number(1, { range: [0, 1] }) });
+            arrObject.push(id_1);
+
+            id_1.onValuesChange((val) => {
             path1.set({ opacity: val.opacity })
             path1.setCoords();
             canvas.requestRenderAll();
         })
+        }
+        creatobject(1)
+
 
     </script>
 </head>
