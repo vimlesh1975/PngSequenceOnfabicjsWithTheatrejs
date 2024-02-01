@@ -6,79 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="./fabric.js"></script>
+
+<body>
     <canvas id="canvas" width="1920" height="1080"></canvas>
+</body>
 
+<script type="module">
+    import 'https://cdn.jsdelivr.net/npm/@theatre/browser-bundles@0.6.0/dist/core-and-studio.js';
+    const { core, studio } = Theatre;
+    studio.initialize(); // Start the Theatre.js UI
+    var canvas = new fabric.Canvas('canvas');
+    window.canvas = canvas;
 
-    <script type="module">
-        import 'https://cdn.jsdelivr.net/npm/@theatre/browser-bundles@0.6.0/dist/core-and-studio.js';
-        // We can now access Theatre.core and Theatre.studio from here
-        const { core, studio } = Theatre;
+    const project = core.getProject('fabricjs png sequence');
+    const sheet = project.sheet('Sheet 1');
+    const arrObject = [];
+    const getObjectbyId = (id) => {
+        return arrObject.find((object) => object.address.objectKey === id);
+    };
 
-        studio.initialize(); // Start the Theatre.js UI
-        var currentValue = [];
-        var temprect;
-        export const shadowOptions = {
-            color: '#000000',
-            blur: 30,
-            offsetX: 0,
-            offsetY: 0,
-            affectStroke: false,
-        };
-
-        // Initialize Fabric.js canvas
-        var canvas = new fabric.Canvas('canvas');
-        window.canvas = canvas;
-        // Create a sample SVG path
-
-        const project = core.getProject('fabricjs path Animation');
-        const sheet = project.sheet('Sheet 1');
-        const arrObject = [];
-        const getObjectbyId = (id) => {
-            return arrObject.find((object) => object.address.objectKey === id);
-        };
-
-        // var path1;
-        const creatobject = (i) => {
-           var path1 = new fabric.Rect({
-                id: 'id_' + i,
-                class: 'class_' + fabric.Object.__uid,
-                left: 150+50*i,
-                width: 200,
-                height: 200,
-                top: 150,
-                fill: `hsl(${i*40}, 100%, 50%)`,
-                stroke: 'red',
-                strokeWidth: 5,
-                strokeUniform: false,
-                objectCaching: false,
-                shadow: shadowOptions,
+    function padNumber(number, length) {
+        return String(number).padStart(length, '0');
+    }
+    for (let i = 0; i <= 5; i++) {
+        const paddedFrameNumber = padNumber(i, 3);
+        const imageUrl = `dd/Sankranthi2024${paddedFrameNumber}.png`
+        fabric.Image.fromURL(imageUrl, img => {
+            img.set({ left: 550, top: 50, scaleX: 0.5, scaleY: 0.5, id: 'ccg_' + i });
+            canvas.add(img);
+            img.on('mousedown', () => {
+                studio.setSelection([getObjectbyId(img.id)]);
             });
-            canvas.add(path1).setActiveObject(path1);
-
-
-            path1.on('mousedown', () => {
-                studio.setSelection([getObjectbyId(path1.id)]);
-            });
-
-            const id_1 = sheet.object(path1.id, { opacity: core.types.number(1, { range: [0, 1] }) });
+            const id_1 = sheet.object(img.id, { opacity: core.types.number(1, { range: [0, 1] }) });
             arrObject.push(id_1);
 
             id_1.onValuesChange((val) => {
-                path1.set({ opacity: val.opacity })
-                path1.setCoords();
+                img.set({ opacity: val.opacity })
+                img.setCoords();
                 canvas.requestRenderAll();
             })
         }
-
-        for (let i = 0; i < 5; i++) {
-            creatobject(i)
-        }
-
-    </script>
-</head>
-
-<body>
-
-</body>
+        );
+    }
+</script>
 
 </html>
