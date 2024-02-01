@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="./fabric.js"></script>
+    <script type="module" src="./core-and-studio.js"></script>
 
 <body>
     <canvas id="canvas" width="1920" height="1080"></canvas>
 </body>
 
 <script type="module">
-    import 'https://cdn.jsdelivr.net/npm/@theatre/browser-bundles@0.6.0/dist/core-and-studio.js';
     const { core, studio } = Theatre;
     studio.initialize(); // Start the Theatre.js UI
     var canvas = new fabric.Canvas('canvas');
@@ -28,26 +28,43 @@
     function padNumber(number, length) {
         return String(number).padStart(length, '0');
     }
-    for (let i = 0; i <= 5; i++) {
+    const totalFrames = 30
+    for (let i = 0; i <= totalFrames; i++) {
         const paddedFrameNumber = padNumber(i, 3);
         const imageUrl = `dd/Sankranthi2024${paddedFrameNumber}.png`
-        fabric.Image.fromURL(imageUrl, img => {
-            img.set({ left: 550, top: 50, scaleX: 0.5, scaleY: 0.5, id: 'ccg_' + i });
-            canvas.add(img);
-            img.on('mousedown', () => {
-                studio.setSelection([getObjectbyId(img.id)]);
+        const img = await new Promise((resolve) => {
+            fabric.Image.fromURL(imageUrl, (image) => {
+                image.set({ left: 550, top: 50, scaleX: 0.5, scaleY: 0.5, id: 'ccg_' + i });
+                canvas.add(image);
+                resolve(image);
             });
-            const id_1 = sheet.object(img.id, { opacity: core.types.number(1, { range: [0, 1] }) });
-            arrObject.push(id_1);
+        });
+        const id_1 = sheet.object(img.id, { opacity: core.types.number(1, { range: [0, 1] }) });
+        arrObject.push(id_1);
 
-            id_1.onValuesChange((val) => {
-                img.set({ opacity: val.opacity })
-                img.setCoords();
-                canvas.requestRenderAll();
+        id_1.onValuesChange((val) => {
+            img.set({ opacity: val.opacity })
+            canvas.requestRenderAll();
+        })
+        for (let i = 0; i <= totalFrames; i++) {
+            sheet.sequence.position = i * 0.04;;
+            studio.transaction((api) => {
+                api.set(id_1.props.opacity, 0);
             })
         }
-        );
     }
+    setTimeout(() => {
+        for (let i = 0; i <= totalFrames; i++) {
+            sheet.sequence.position = i * 0.04;
+            studio.transaction((api) => {
+                api.set(getObjectbyId('ccg_' + i).props.opacity, 1);
+            })
+        }
+        project.ready.then(() => {
+            sheet.sequence.play({ iterationCount: Infinity, range: [0, totalFrames / 25] })
+        })
+    }, 5000);
+
 </script>
 
 </html>
