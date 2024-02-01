@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabric.js PNG Sequence Set Opacity</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.6.6/fabric.min.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas" width="1920" height="1080"></canvas>
+    <script>
+        const canvas = new fabric.Canvas('canvas');
+        const totalFrames = 391;
+        const imageObjects = [];
+
+        async function loadPNGSequence() {
+            for (let i = 0; i <= totalFrames; i++) {
+                const paddedFrameNumber = String(i).padStart(3, '0');
+                const imageUrl = `dd/Sankranthi2024${paddedFrameNumber}.png`;
+
+                const img = await new Promise((resolve) => {
+                    fabric.Image.fromURL(imageUrl, (image) => {
+                        image.set({ left: 100, top: 100, scaleX: 1, scaleY: 1, opacity: 0 });
+                        imageObjects.push(image);
+                        resolve(image);
+                    });
+                });
+            }
+        }
+
+        async function groupImages() {
+            // Group all image objects
+            const imageGroup = new fabric.Group(imageObjects, {
+                left: 0,
+                top: 0,
+                scaleX: 1,
+                scaleY: 1,
+                opacity: 1  // Initial opacity of the entire group
+            });
+
+            // Add the group to the canvas
+            canvas.add(imageGroup);
+
+            // Return the group
+            return imageGroup;
+        }
+
+        async function playAnimation() {
+            await loadPNGSequence();
+            const group = await groupImages();
+
+            let j = 0;
+            setInterval(() => {
+                // Set opacity for individual images within the group
+                group.getObjects().forEach((image, index) => {
+                    image.set({ opacity: index === j ? 1 : 0 });
+                });
+
+                j = (j + 1) % totalFrames;
+                canvas.requestRenderAll();
+            }, 10);
+        }
+
+        playAnimation();
+    </script>
+</body>
+
+</html>
