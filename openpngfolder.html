@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Folder and Log PNG Files</title>
+</head>
+
+<body>
+    <h1>Open Folder and Log PNG Files</h1>
+    <button onclick="openFolder()">Open Folder</button>
+
+    <script>
+        function openFolder() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.webkitdirectory = true;
+            input.multiple = true;
+            input.style.display = 'none';
+
+            input.addEventListener('change', function (event) {
+                const files = event.target.files;
+
+                for (let i = 0; i < files.length; i++) {
+                    const fileName = files[i].name;
+                    console.log(fileName);
+                }
+            });
+
+            document.body.appendChild(input);
+            input.click();
+            document.body.removeChild(input);
+        }
+    </script>
+</body>
+
+</html>

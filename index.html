@@ -30,21 +30,23 @@
         return String(number).padStart(length, '0');
     }
     const totalFrames = 20
+    const prefix = 'pngseq / '
+
     for (let i = 0; i <= totalFrames; i++) {
         const paddedFrameNumber = padNumber(i, 3);
         const imageUrl = `dd/Sankranthi2024${paddedFrameNumber}.png`
         const img = await new Promise((resolve) => {
             fabric.Image.fromURL(imageUrl, (image) => {
-                image.set({ left: 0, top: 0, scaleX: 1, scaleY: 1, id: 'ccg_' + i, opacity: 0 });
+                image.set({ left: 0, top: 0, scaleX: 1, scaleY: 1, id: prefix + i.toString(), opacity: 0 });
                 imageObjects.push(image);
                 resolve(image);
             });
         });
-        const id_1 = sheet.object(img.id, { opacity: core.types.boolean(false)});
+        const id_1 = sheet.object( img.id, { opacity: false });
         arrObject.push(id_1);
 
         id_1.onValuesChange((val) => {
-            img.set({ opacity: val.opacity?1:0 })
+            img.set({ opacity: val.opacity ? 1 : 0 })
             canvas.requestRenderAll();
         })
     }
@@ -52,28 +54,28 @@
         for (let i = 0; i <= totalFrames; i++) {
             sheet.sequence.position = 0;;
             studio.transaction((api) => {
-                api.set(getObjectbyId('ccg_' + i).props.opacity, false);
+                api.set(getObjectbyId(prefix + i.toString()).props.opacity, false);
             })
         }
 
         for (let i = 0; i <= totalFrames; i++) {
             sheet.sequence.position = i * 0.04;
             studio.transaction((api) => {
-                api.set(getObjectbyId('ccg_' + i).props.opacity, false);
+                api.set(getObjectbyId(prefix + i.toString()).props.opacity, false);
             })
         }
 
         for (let i = 0; i <= totalFrames; i++) {
-            sheet.sequence.position = (i+1) * 0.04;
+            sheet.sequence.position = (i + 1) * 0.04;
             studio.transaction((api) => {
-                api.set(getObjectbyId('ccg_' + i).props.opacity, true);
+                api.set(getObjectbyId(prefix + i.toString()).props.opacity, true);
             })
         }
 
         for (let i = 0; i <= totalFrames; i++) {
-            sheet.sequence.position = (i+2) * 0.04;
+            sheet.sequence.position = (i + 2) * 0.04;
             studio.transaction((api) => {
-                api.set(getObjectbyId('ccg_' + i).props.opacity, true);
+                api.set(getObjectbyId(prefix + i.toString()).props.opacity, false);
             })
         }
 
