@@ -40,11 +40,11 @@
                 resolve(image);
             });
         });
-        const id_1 = sheet.object(img.id, { opacity: core.types.number(1, { range: [0, 1] }) });
+        const id_1 = sheet.object(img.id, { opacity: core.types.boolean(false)});
         arrObject.push(id_1);
 
         id_1.onValuesChange((val) => {
-            img.set({ opacity: val.opacity })
+            img.set({ opacity: val.opacity?1:0 })
             canvas.requestRenderAll();
         })
     }
@@ -52,28 +52,28 @@
         for (let i = 0; i <= totalFrames; i++) {
             sheet.sequence.position = 0;;
             studio.transaction((api) => {
-                api.set(getObjectbyId('ccg_' + i).props.opacity, 0);
+                api.set(getObjectbyId('ccg_' + i).props.opacity, false);
             })
         }
 
         for (let i = 0; i <= totalFrames; i++) {
             sheet.sequence.position = i * 0.04;
             studio.transaction((api) => {
-                api.set(getObjectbyId('ccg_' + i).props.opacity, 0);
+                api.set(getObjectbyId('ccg_' + i).props.opacity, false);
             })
         }
 
         for (let i = 0; i <= totalFrames; i++) {
             sheet.sequence.position = (i+1) * 0.04;
             studio.transaction((api) => {
-                api.set(getObjectbyId('ccg_' + i).props.opacity, 1);
+                api.set(getObjectbyId('ccg_' + i).props.opacity, true);
             })
         }
 
         for (let i = 0; i <= totalFrames; i++) {
             sheet.sequence.position = (i+2) * 0.04;
             studio.transaction((api) => {
-                api.set(getObjectbyId('ccg_' + i).props.opacity, 0);
+                api.set(getObjectbyId('ccg_' + i).props.opacity, true);
             })
         }
 
