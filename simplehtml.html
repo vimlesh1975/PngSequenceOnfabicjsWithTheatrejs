@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Sequence Player</title>
+    <style>
+        #image-sequence {
+            width: 600px;
+            /* Adjust as needed */
+            height: 400px;
+            /* Adjust as needed */
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <img id="image-sequence" src="" alt="Image Sequence">
+    </div>
+    <script>
+        const totalImages = 392; // Total number of images in the sequence
+        const frameRate = 10; // Frame rate in milliseconds (100ms = 10 frames per second)
+        let currentImageIndex = 0;
+        function playImageSequence() {
+            const imgElement = document.getElementById('image-sequence');
+            const paddedFrameNumber = String(currentImageIndex).padStart(3, '0');
+            const imageUrl = `dd/Sankranthi2024${paddedFrameNumber}.png`;
+            imgElement.src = imageUrl;
+            currentImageIndex++;
+            if (currentImageIndex > totalImages) {
+                currentImageIndex = 0; // Loop back to the first image
+            }
+            setTimeout(playImageSequence, frameRate);
+        }
+        window.onload = function () {
+            playImageSequence();
+        }
+    </script>
+</body>
+
+</html>
