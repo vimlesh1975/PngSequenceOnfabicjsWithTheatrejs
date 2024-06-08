@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabric.js PNG Sequence Set Opacity</title>
+    <script src="./fabric.min.js"></script>
+    <style>
+        #scrubber {
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <input type="range" id="scrubber" min="0" max="391" value="0" step="1">
+    <button id="playButton">Play Animation</button>
+    <canvas id="canvas" width="1920" height="1080"></canvas>
+ 
+    <script>
+        const canvas = new fabric.Canvas('canvas');
+        const totalFrames = 391;
+        const imageObjects = [];
+        let animationInterval;
+        let isScrubbing = false;
+
+        async function loadPNGSequence() {
+            for (let i = 0; i <= totalFrames; i++) {
+                const paddedFrameNumber = String(i).padStart(3, '0');
+                const imageUrl = `dd/Sankranthi2024${paddedFrameNumber}.png`;
+
+                const img = await new Promise((resolve) => {
+                    fabric.Image.fromURL(imageUrl, (image) => {
+                        image.set({ left: 100, top: 100, scaleX: 1, scaleY: 1, opacity: 0 });
+                        imageObjects.push(image);
+                        resolve(image);
+                    });
+                });
+            }
+        }
+
+        async function groupImages() {
+            // Group all image objects
+            const imageGroup = new fabric.Group(imageObjects, {
+                left: 0,
+                top: 0,
+                scaleX: 1,
+                scaleY: 1,
+                opacity: 1  // Initial opacity of the entire group
+            });
+
+            // Add the group to the canvas
+            canvas.add(imageGroup);
+
+            // Return the group
+            return imageGroup;
+        }
+
+        function showFrame(group, frameIndex) {
+            group.getObjects().forEach((image, index) => {
+                image.set({ opacity: index === frameIndex ? 1 : 0 });
+            });
+            canvas.requestRenderAll();
+        }
+
+        async function playAnimation(startFrame) {
+            if (imageObjects.length === 0) {
+                await loadPNGSequence();
+                await groupImages();
+            }
+
+            let j = startFrame;
+            animationInterval = setInterval(() => {
+                if (!isScrubbing) {
+                    const group = canvas.getObjects()[0]; // Assuming the group is the first object on the canvas
+                    showFrame(group, j);
+                    j = (j + 1) % totalFrames;
+                    document.getElementById('scrubber').value = j;
+                }
+            }, 1000 / 60); // Adjust the frame rate as needed
+        }
+
+        document.getElementById('scrubber').addEventListener('input', function (event) {
+            clearInterval(animationInterval);
+            isScrubbing = true;
+            const frameIndex = parseInt(event.target.value, 10);
+            const group = canvas.getObjects()[0]; // Assuming the group is the first object on the canvas
+            showFrame(group, frameIndex);
+        });
+
+        document.getElementById('scrubber').addEventListener('change', function (event) {
+            isScrubbing = false;
+            const frameIndex = parseInt(event.target.value, 10);
+            const group = canvas.getObjects()[0]; // Assuming the group is the first object on the canvas
+            showFrame(group, frameIndex);
+        });
+
+        document.getElementById('playButton').addEventListener('click', function () {
+            const currentFrame = parseInt(document.getElementById('scrubber').value, 10);
+            playAnimation(currentFrame);
+        });
+
+        // Initial load
+        loadPNGSequence().then(() => groupImages());
+    </script>
+</body>
+
+</html>
