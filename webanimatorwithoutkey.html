@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./fabric.min.js"></script>
+    <script type="module" src="./core-and-studio.js"></script>
+
+<body>
+    <canvas id="canvas" width="1920" height="1080"></canvas>
+</body>
+
+<script type="module">
+    const { core, studio } = Theatre;
+    studio.initialize(); // Start the Theatre.js UI
+    var canvas = new fabric.Canvas('canvas');
+    canvas.preserveObjectStacking = true;
+    window.canvas = canvas;
+    const imageObjects = [];
+
+    const project = core.getProject('fabricjs png sequence');
+    const sheet = project.sheet('Sheet 1');
+    const arrObject = [];
+    const getObjectbyId = (id) => {
+        return arrObject.find((object) => object.address.objectKey === id);
+    };
+
+    function padNumber(number, length) {
+        return String(number).padStart(length, '0');
+    }
+    const totalFrames = 249
+    const prefix = 'pngseq / '
+
+    for (let i = 0; i <= totalFrames; i++) {
+        const paddedFrameNumber = padNumber(i, 5);
+        const imageUrl = `br/HIGH_BREAKING_NEWS_${paddedFrameNumber}.png`
+        const img = await new Promise((resolve) => {
+            fabric.Image.fromURL(imageUrl, (image) => {
+                image.set({ id: prefix + i.toString(), opacity: 0 });
+                imageObjects.push(image);
+                resolve(image);
+            });
+        });
+
+        async function groupImages() {
+
+
+
+
+            // Group all image objects
+            const imageGroup = new fabric.Group(imageObjects, {
+                left: 50,
+                top: -500,
+                selectable: false,
+                opacity: 1  // Initial opacity of the entire group
+            });
+
+            // Add the group to the canvas
+            canvas.add(imageGroup);
+
+            const id_1 = sheet.object('imageGroup', { opacity: false });
+            arrObject.push(id_1);
+
+            const sss = new fabric.Textbox("दिल्ली में प्रदूषण के चलते कंस्ट्रक्शन एक्टिविटी पर लगा प्रतिबंध हटाया गया - NDTV India", {
+                left: 200,
+                top: 430,
+                width: 1700,
+                fill: "#000000",
+                fontWeight: "bold",
+                editable: true,
+                objectCaching: false,
+                textAlign: "center",
+                stroke: "#000000",
+                strokeWidth: 0,
+                id: "clock1",
+                class: "class_" + fabric.Object.__uid,
+            });
+            canvas.add(sss).setActiveObject(sss);
+
+            const id_2 = sheet.object('rect', { left: 200 });
+            arrObject.push(id_2);
+
+            canvas.requestRenderAll();
+
+
+            id_2.onValuesChange((val) => {
+                sss.set({ left: val.left });
+
+                imageGroup.getObjects().forEach((image, index) => {
+                    image.set({ opacity: index === parseInt((sheet.sequence.position) * 30) ? 1 : 0 });
+                });
+
+                canvas.requestRenderAll();
+            })
+
+        }
+
+        window.onload = () => {
+            groupImages();
+            project.onReady=()=>{
+                sheet.sequence.play();
+            }
+
+
+        }
+
+    }
+
+
+</script>
+
+</html>
