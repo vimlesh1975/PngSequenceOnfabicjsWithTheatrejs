@@ -15,98 +15,128 @@
 <script type="module">
     const { core, studio } = Theatre;
     studio.initialize(); // Start the Theatre.js UI
+    // studio.ui.hide();
     var canvas = new fabric.Canvas('canvas');
     canvas.preserveObjectStacking = true;
     window.canvas = canvas;
     const imageObjects = [];
+    import state from './webanimatorwithoutkey.json'  assert { type: 'json' };
 
-    const project = core.getProject('fabricjs png sequence');
+
+    console.log(JSON.stringify(state));
+
+    const project = core.getProject('fabricjs png sequence', { state });
     const sheet = project.sheet('Sheet 1');
     const arrObject = [];
     const getObjectbyId = (id) => {
         return arrObject.find((object) => object.address.objectKey === id);
     };
 
+    const getElementById = (id => {
+        return canvas.getObjects().find(element => element.id === id);
+    })
+
     function padNumber(number, length) {
         return String(number).padStart(length, '0');
     }
     const totalFrames = 249
-    const prefix = 'pngseq / '
+    const data1 = [
+        'मुख्यमंत्री योगी आदित्यनाथ ने दी मुलायम सिंह को जन्मदिन की बधाई, जानिए क्या कहा',
+        'चलने नहीं देंगे रामायण एक्सप्रेस, संतों की वेशभूषा में वेटरों पर साधुओं की चेतावनी',
+        'तानाशाहों के लिए ना गाएं, मारे गए पत्रकार खशोगी की मंगेतर की सिंगर से अपील - आज तक',
+        'Share Market Today : सेंसेक्स हुआ धड़ाम, 1100 से ज्यादा अंकों की गिरावट, Nifty भी लुढ़का',
+        'Malaika Arora जालीदार ड्रेस पहनने की वजह से हुईं ट्रोल, लोग बोले ‘सबकुछ दिख जाए, ऐसा भी क्या फैशन',
+        'पेट्रोल-डीजल हो सकता है और भी सस्ता! कीमतों में कटौती की उम्मीद - Hindustan हिंदी',
+        'मुझे मुंबई आने में डर लगता है, परमबीर सिंह की दलील पर SC ने दिया ये आदेश - आज तक',
+        'अनुपमा सीरियल में Rupali Ganguly की मां का किरदार निभा चुकीं एक्ट्रेस Madhavi Gogate का निधन',
+        'पठानकोट में आर्मी कैंप के गेट के पास ग्रेनेड धमाका, सभी चौकियां हाई अलर्ट पर - NDTV India',
+    ]
 
     for (let i = 0; i <= totalFrames; i++) {
         const paddedFrameNumber = padNumber(i, 5);
         const imageUrl = `br/HIGH_BREAKING_NEWS_${paddedFrameNumber}.png`
         const img = await new Promise((resolve) => {
             fabric.Image.fromURL(imageUrl, (image) => {
-                image.set({ id: prefix + i.toString(), opacity: 0 });
+                image.set({ opacity: 0 });
                 imageObjects.push(image);
                 resolve(image);
             });
         });
+    }
+    async function groupImages() {
+        const imageGroup = new fabric.Group(imageObjects, {
+            left: 50,
+            top: -500,
+            selectable: false,
+        });
 
-        async function groupImages() {
+        // Add the group to the canvas
+        canvas.add(imageGroup);
+
+        const id_1 = sheet.object('imageGroup', { opacity: false });
+        arrObject.push(id_1);
+
+        const sss = new fabric.Textbox("दिल्ली में प्रदूषण के चलते कंस्ट्रक्शन एक्टिविटी पर लगा प्रतिबंध हटाया गया - NDTV India", {
+            left: 0,
+            top: 430,
+            width: 1700,
+            fill: "#000000",
+            fontWeight: "bold",
+            fontSize: 30,
+            textAlign: "left",
+            objectCaching: false,
+            textAlign: "center",
+            stroke: "#000000",
+            strokeWidth: 0,
+            id: "t1",
+        });
+        canvas.add(sss);
+
+        const id_2 = sheet.object('t1', { left: 200 });
+        arrObject.push(id_2);
+
+        canvas.requestRenderAll();
 
 
+        id_2.onValuesChange((val) => {
+            sss.set({ left: val.left });
 
-
-            // Group all image objects
-            const imageGroup = new fabric.Group(imageObjects, {
-                left: 50,
-                top: -500,
-                selectable: false,
-                opacity: 1  // Initial opacity of the entire group
+            imageGroup.getObjects().forEach((image, index) => {
+                image.set({ opacity: index === parseInt((sheet.sequence.position) * 30) ? 1 : 0 });
             });
-
-            // Add the group to the canvas
-            canvas.add(imageGroup);
-
-            const id_1 = sheet.object('imageGroup', { opacity: false });
-            arrObject.push(id_1);
-
-            const sss = new fabric.Textbox("दिल्ली में प्रदूषण के चलते कंस्ट्रक्शन एक्टिविटी पर लगा प्रतिबंध हटाया गया - NDTV India", {
-                left: 200,
-                top: 430,
-                width: 1700,
-                fill: "#000000",
-                fontWeight: "bold",
-                editable: true,
-                objectCaching: false,
-                textAlign: "center",
-                stroke: "#000000",
-                strokeWidth: 0,
-                id: "clock1",
-                class: "class_" + fabric.Object.__uid,
-            });
-            canvas.add(sss).setActiveObject(sss);
-
-            const id_2 = sheet.object('rect', { left: 200 });
-            arrObject.push(id_2);
 
             canvas.requestRenderAll();
-
-
-            id_2.onValuesChange((val) => {
-                sss.set({ left: val.left });
-
-                imageGroup.getObjects().forEach((image, index) => {
-                    image.set({ opacity: index === parseInt((sheet.sequence.position) * 30) ? 1 : 0 });
-                });
-
-                canvas.requestRenderAll();
-            })
-
-        }
-
-        window.onload = () => {
-            groupImages();
-            project.onReady=()=>{
-                sheet.sequence.play();
-            }
-
-
-        }
+        })
 
     }
+
+    window.onload = () => {
+        groupImages().then(aa => {
+            project.ready.then(() => {
+
+                sheet.sequence.play({ iterationCount: Infinity, range: [0, 4] })
+                sheet.sequence.play();
+                getElementById('t1').set({ textAlign: 'left', text: data1[0], objectCaching: false,});
+                getElementById('t1').setCoords();
+                canvas.renderAll();
+                console.log(getElementById('t1').text);
+                let i = 1;
+                setInterval(() => {
+                    sheet.sequence.position = 0;
+                    getElementById('t1').set({ textAlign: 'left', text: data1[i] });
+                    canvas.requestRenderAll();
+
+                    sheet.sequence.play();
+                    i++;
+                    if (i >= data1.length - 1) {
+                        i = 0;
+                    }
+                }, 3000);
+            })
+        });
+    }
+
+
 
 
 </script>
