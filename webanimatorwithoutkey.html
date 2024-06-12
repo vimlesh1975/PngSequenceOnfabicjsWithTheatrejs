@@ -97,14 +97,16 @@
 
         canvas.requestRenderAll();
 
+        core.onChange(sheet.sequence.pointer.position, (position) => {
+            imageGroup.getObjects().forEach((image, index) => {
+                image.set({ opacity: index === parseInt((position) * 30) ? 1 : 0 });
+            });
+            canvas.requestRenderAll();
+        })
+
 
         id_2.onValuesChange((val) => {
             sss.set({ left: val.left });
-
-            imageGroup.getObjects().forEach((image, index) => {
-                image.set({ opacity: index === parseInt((sheet.sequence.position) * 30) ? 1 : 0 });
-            });
-
             canvas.requestRenderAll();
         })
 
@@ -116,7 +118,7 @@
 
                 sheet.sequence.play({ iterationCount: Infinity, range: [0, 4] })
                 sheet.sequence.play();
-                getElementById('t1').set({ textAlign: 'left', text: data1[0], objectCaching: false,});
+                getElementById('t1').set({ textAlign: 'left', text: data1[0], objectCaching: false, });
                 getElementById('t1').setCoords();
                 canvas.renderAll();
                 console.log(getElementById('t1').text);
